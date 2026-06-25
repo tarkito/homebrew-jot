@@ -13,7 +13,7 @@ cask "jotraw" do
   desc "Command-line companion and iCloud sync agent for the JotRaw iOS app"
   homepage "https://github.com/tarkito/Jot"
 
-  depends_on macos: ">= :sequoia"
+  depends_on macos: :sequoia
 
   app "JotSync.app"
   binary "jotraw"

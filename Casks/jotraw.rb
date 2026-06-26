@@ -23,16 +23,30 @@ cask "jotraw" do
   postflight do
     plist_src = "#{staged_path}/eu.helfin.jotsync.plist"
     plist_dst = "#{Dir.home}/Library/LaunchAgents/eu.helfin.jotsync.plist"
+    service   = "gui/#{Process.uid}/eu.helfin.jotsync"
+    domain    = "gui/#{Process.uid}"
 
     FileUtils.mkdir_p(File.dirname(plist_dst))
     FileUtils.cp(plist_src, plist_dst)
 
-    system "/bin/launchctl", "bootout", "gui/#{Process.uid}/eu.helfin.jotsync"
-    system "/bin/launchctl", "bootstrap", "gui/#{Process.uid}", plist_dst
+    system_command "/bin/launchctl",
+                   args:         ["bootout", service],
+                   must_succeed: false,
+                   print_stderr: false,
+                   print_stdout: false
+    system_command "/bin/launchctl",
+                   args:         ["bootstrap", domain, plist_dst],
+                   must_succeed: true
   end
 
   uninstall_preflight do
-    system "/bin/launchctl", "bootout", "gui/#{Process.uid}/eu.helfin.jotsync"
+    service = "gui/#{Process.uid}/eu.helfin.jotsync"
+
+    system_command "/bin/launchctl",
+                   args:         ["bootout", service],
+                   must_succeed: false,
+                   print_stderr: false,
+                   print_stdout: false
     FileUtils.rm_f("#{Dir.home}/Library/LaunchAgents/eu.helfin.jotsync.plist")
   end
 

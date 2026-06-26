@@ -8,7 +8,7 @@ cask "jotraw" do
   #   jotraw-<version>-macos.zip
   #     ├── JotSync.app/
   #     └── jotraw
-  url "https://github.com/tarkito/Jot/releases/download/v#{version}/jotraw-#{version}-macos.zip"
+  url "https://github.com/tarkito/homebrew-jot/releases/download/v#{version}/jotraw-#{version}-macos.zip"
   name "jotraw"
   desc "Command-line companion and iCloud sync agent for the JotRaw iOS app"
   homepage "https://github.com/tarkito/Jot"

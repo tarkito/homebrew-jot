@@ -1,6 +1,6 @@
 cask "jotraw" do
-  version "1.0.4"
-  sha256  "a90d24ec80c487612730da4212b0b1815dea5b893ef598f08ad777b9f7795626"
+  version "1.0.5"
+  sha256  "71c89d2e89d7ed3040f053ce1cc09545a456252dc06cbf19acde22297174b14b"
 
   # TODO: replace with the real release URL once published.
   # The artifact should be a notarized, code-signed zip containing JotSync.app

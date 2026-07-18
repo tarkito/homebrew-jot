@@ -2,16 +2,15 @@ cask "jotraw" do
   version "1.1.0"
   sha256  "0bf76a2bcb4080be2811b83c725d49000753e490e1421504aef601d156639d2b"
 
-  # TODO: replace with the real release URL once published.
   # The artifact should be a notarized, code-signed zip containing JotSync.app
   # and the jotraw binary at the top level:
   #   jotraw-<version>-macos.zip
   #     ├── JotSync.app/
   #     └── jotraw
-  url "https://github.com/tarkito/homebrew-jot/releases/download/v#{version}/jotraw-#{version}-macos.zip"
+  url "https://github.com/evorio-io/homebrew-jotraw/releases/download/v#{version}/jotraw-#{version}-macos.zip"
   name "jotraw"
   desc "Command-line companion and iCloud sync agent for the JotRaw iOS app"
-  homepage "https://github.com/tarkito/Jot"
+  homepage "https://github.com/evorio-io/jotraw"
 
   depends_on macos: :sequoia
 
@@ -36,9 +35,9 @@ cask "jotraw" do
   # to avoid matching the `open` wrapper) and wait for it to exit before
   # bootstrapping, guaranteeing the new version is the one that comes up.
   postflight do
-    plist_src = "#{staged_path}/eu.helfin.jotsync.plist"
-    plist_dst = "#{Dir.home}/Library/LaunchAgents/eu.helfin.jotsync.plist"
-    service   = "gui/#{Process.uid}/eu.helfin.jotsync"
+    plist_src = "#{staged_path}/io.evorio.jotsync.plist"
+    plist_dst = "#{Dir.home}/Library/LaunchAgents/io.evorio.jotsync.plist"
+    service   = "gui/#{Process.uid}/io.evorio.jotsync"
     domain    = "gui/#{Process.uid}"
     exec_path = "/Applications/JotSync.app/Contents/MacOS/JotSync"
 
@@ -52,6 +51,27 @@ cask "jotraw" do
                    must_succeed: false,
                    print_stderr: false,
                    print_stdout: false
+
+    # Same again for the pre-io.evorio agent. Upgrading from an eu.helfin
+    # build leaves that job registered against the very same JotSync.app, so
+    # its KeepAlive would respawn the app moments after the pkill below and
+    # the two agents would then race to own the process on every login.
+    # Worse, uninstall only knows the new label, so the stale agent would
+    # outlive the cask and keep relaunching an app that is no longer there.
+    # Boot it out and delete its plist before terminating anything.
+    legacy_service = "gui/#{Process.uid}/eu.helfin.jotsync"
+    legacy_plist   = "#{Dir.home}/Library/LaunchAgents/eu.helfin.jotsync.plist"
+
+    system_command "/bin/launchctl",
+                   args:         ["bootout", legacy_service],
+                   must_succeed: false,
+                   print_stderr: false,
+                   print_stdout: false
+    begin
+      File.delete(legacy_plist)
+    rescue Errno::ENOENT
+      nil
+    end
 
     # Ask the running (old) instance to quit, then wait up to ~10s for it to
     # actually exit so the new binary isn't racing a shutdown of the old one.
@@ -77,21 +97,30 @@ cask "jotraw" do
   end
 
   uninstall_preflight do
-    service = "gui/#{Process.uid}/eu.helfin.jotsync"
+    service = "gui/#{Process.uid}/io.evorio.jotsync"
 
     system_command "/bin/launchctl",
                    args:         ["bootout", service],
                    must_succeed: false,
                    print_stderr: false,
                    print_stdout: false
-    FileUtils.rm_f("#{Dir.home}/Library/LaunchAgents/eu.helfin.jotsync.plist")
+    plist_dst = "#{Dir.home}/Library/LaunchAgents/io.evorio.jotsync.plist"
+    begin
+      File.delete(plist_dst)
+    rescue Errno::ENOENT
+      nil
+    end
   end
 
   zap trash: [
-    "~/Library/Group Containers/group.eu.helfin.Jot",
-    "~/Library/Containers/eu.helfin.JotSync",
-    "~/Library/LaunchAgents/eu.helfin.jotsync.plist",
-    "/tmp/jotsync.out.log",
     "/tmp/jotsync.err.log",
+    "/tmp/jotsync.out.log",
+    "~/Library/Containers/io.evorio.jotsync",
+    "~/Library/Group Containers/group.io.evorio.jotraw",
+    "~/Library/LaunchAgents/io.evorio.jotsync.plist",
+    # Pre-io.evorio leftovers, so a zap after an upgrade-in-place is complete.
+    "~/Library/Containers/eu.helfin.jotsync",
+    "~/Library/Group Containers/group.eu.helfin.Jot",
+    "~/Library/LaunchAgents/eu.helfin.jotsync.plist",
   ]
 end

@@ -1,6 +1,6 @@
 cask "jotraw" do
-  version "1.1.0"
-  sha256  "0bf76a2bcb4080be2811b83c725d49000753e490e1421504aef601d156639d2b"
+  version "1.2.0"
+  sha256  "c6787a363497e6d546b3864a3be60e06962d33d528a5426e155c33cb55a792a5"
 
   # The artifact should be a notarized, code-signed zip containing JotSync.app
   # and the jotraw binary at the top level:
@@ -112,15 +112,16 @@ cask "jotraw" do
     end
   end
 
+  # The eu.helfin entries cover pre-migration leftovers, so a zap after an
+  # upgrade-in-place is complete.
   zap trash: [
     "/tmp/jotsync.err.log",
     "/tmp/jotsync.out.log",
-    "~/Library/Containers/io.evorio.jotsync",
-    "~/Library/Group Containers/group.io.evorio.jotraw",
-    "~/Library/LaunchAgents/io.evorio.jotsync.plist",
-    # Pre-io.evorio leftovers, so a zap after an upgrade-in-place is complete.
     "~/Library/Containers/eu.helfin.jotsync",
+    "~/Library/Containers/io.evorio.jotsync",
     "~/Library/Group Containers/group.eu.helfin.Jot",
+    "~/Library/Group Containers/group.io.evorio.jotraw",
     "~/Library/LaunchAgents/eu.helfin.jotsync.plist",
+    "~/Library/LaunchAgents/io.evorio.jotsync.plist",
   ]
 end

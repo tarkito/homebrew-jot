@@ -92,7 +92,7 @@ requests welcome at the tap repo:
 
 ## License
 
-The cask and this README are MIT-licensed (see `LICENSE`). The bundled
+The cask and this README are MIT-licensed (see [LICENSE](LICENSE)). The bundled
 binaries (`jotraw`, `JotSync.app`) are distributed under the JotRaw EULA
 shipped inside the app.
-```
+

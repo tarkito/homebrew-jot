@@ -1,4 +1,4 @@
-# homebrew-jot
+# homebrew-jotraw
 
 A [Homebrew tap](https://docs.brew.sh/Taps) for the `jotraw` command-line
 tool and the `JotSync` iCloud sync agent that pair with the
@@ -11,12 +11,12 @@ iPad"). This tap adds two pieces that aren't in the App Store distribution:
 |------|----------------|
 | `jotraw` CLI | `/opt/homebrew/bin/jotraw` |
 | `JotSync.app` faceless sync agent | `/Applications/JotSync.app` |
-| launchd plist that keeps the agent alive at login | `~/Library/LaunchAgents/eu.helfin.jotsync.plist` |
+| launchd plist that keeps the agent alive at login | `~/Library/LaunchAgents/io.evorio.jotsync.plist` |
 
 ## Install
 
 ```sh
-brew tap tarkito/jot
+brew tap evorio-io/jotraw
 brew install --cask jotraw
 ```
 
@@ -24,7 +24,7 @@ Homebrew will prompt once to trust the tap (required for casks from
 third-party taps that run install-time scripts):
 
 ```sh
-brew trust tarkito/jot
+brew trust evorio-io/jotraw
 ```
 
 After install, `jotraw` is available in any new shell. The sync agent is
@@ -52,11 +52,11 @@ the same iCloud account), the value updates there within a few seconds.
 iPhone / iPad / Mac (JotRaw iOS app)
                        |
                        v
-            NSUbiquitousKeyValueStore  <--->  iCloud
+            CloudKit private database  <--->  iCloud
                        ^
-                       |   ScratchpadMirror, runs in JotSync.app
+                       |   CKSyncEngine, runs in JotSync.app
                        v
-            ~/Library/Group Containers/group.eu.helfin.Jot/scratchpad.txt
+            ~/Library/Group Containers/group.io.evorio.jotraw/scratchpad.txt
                        ^
                        |
                        v
@@ -64,14 +64,14 @@ iPhone / iPad / Mac (JotRaw iOS app)
 ```
 
 `JotSync.app` is the part with iCloud entitlements. It mirrors changes
-between the local file (which `jotraw` reads/writes) and Apple's
-`NSUbiquitousKeyValueStore` (which iCloud syncs across your devices) in
+between the local file (which `jotraw` reads/writes) and a CloudKit
+private-database record (which iCloud syncs across your devices) in
 both directions. The CLI itself has no iCloud entitlements and doesn't
 need them — the agent handles the sync.
 
 Either side can be installed first. The CLI works standalone (with no
-sync) until the iOS app or another instance of JotSync brings KVS into
-the picture.
+sync) until the iOS app or another instance of JotSync brings iCloud
+into the picture.
 
 ## Uninstall
 
@@ -81,14 +81,14 @@ brew uninstall --cask jotraw
 
 This stops and unregisters the sync agent, removes the binary, the app,
 and the launchd plist. The scratchpad file at
-`~/Library/Group Containers/group.eu.helfin.Jot/scratchpad.txt` is left
+`~/Library/Group Containers/group.io.evorio.jotraw/scratchpad.txt` is left
 in place — `brew uninstall --cask --zap jotraw` removes that too.
 
 ## Source code
 
 The CLI and agent sources live in a private repo. Issues and feature
 requests welcome at the tap repo:
-<https://github.com/tarkito/homebrew-jot/issues>.
+<https://github.com/evorio-io/homebrew-jotraw/issues>.
 
 ## License
 

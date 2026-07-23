@@ -16,16 +16,13 @@ iPad"). This tap adds two pieces that aren't in the App Store distribution:
 ## Install
 
 ```sh
+brew trust evorio-io/jotraw
 brew tap evorio-io/jotraw
 brew install --cask jotraw
 ```
-
-Homebrew will prompt once to trust the tap (required for casks from
-third-party taps that run install-time scripts):
-
-```sh
-brew trust evorio-io/jotraw
-```
+> [!NOTE]
+> Homebrew requires user to trust the tap. Required for casks from
+> third-party taps that run install-time scripts.
 
 After install, `jotraw` is available in any new shell. The sync agent is
 already running — no logout/login needed.
@@ -41,6 +38,9 @@ printf "hello from terminal" | jotraw
 
 # Suppress the echo on write
 printf "quiet write" | jotraw --no-output
+
+# Edit the scratchpad contents
+nvim "$(jotraw file)"
 ```
 
 If the JotRaw iOS app is open on this Mac (or on another device signed into
